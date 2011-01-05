@@ -78,7 +78,7 @@ except ImportError:
     pass
 
 home = os.path.expandvars('$HOME')
-user_dir = os.path.join(home, os.environ.get("PYTHONUSERDIR", ".python"))
+user_dir = os.environ.get("PYTHONUSERDIR")
 sys.path.append(user_dir)
 
 ##### Some settings you may want to change #####
@@ -95,7 +95,7 @@ if editorbase in ['nedit', 'nc', 'ncl', 'emacs', 'emacsclient', 'xemacs'] :
 elif editorbase in ['vi', 'vim', 'jed']:
     # Don't want to run vi in the background!
     # If your editor requires a terminal (e.g. joe) use this as a template
-    EDITOR = 'xterm -e ' + EDITOR + ' +%(lineno)s %(fname)s &'
+    EDITOR = 'gnome-terminal -e \'' + EDITOR + ' +%(lineno)s %(fname)s\' &'
 else:
     # Guess that the editor only supports the filename
     EDITOR = EDITOR + ' %(fname)s &'
