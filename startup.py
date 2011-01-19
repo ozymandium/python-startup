@@ -77,6 +77,15 @@ try:
 except ImportError:
     pass
 
+try:
+    os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
+    from django.db.models.loading import get_models
+except ImportError:
+    pass
+else:
+    for m in get_models():
+        exec "from %s import %s" % (m.__module__, m.__name__)
+
 home = os.path.expandvars('$HOME')
 user_dir = os.environ.get("PYTHONUSERDIR")
 sys.path.append(user_dir)
