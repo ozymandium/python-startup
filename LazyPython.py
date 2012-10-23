@@ -8,17 +8,17 @@ import re, exceptions, traceback, sys, os
 
 # There's no version_info in 1.5.2.  Use sys.version instead
 if sys.version[0:3] < '2.1':
-    raise ImportError, 'Python Version 2.1 or above is required.'
+    raise ImportError('Python Version 2.1 or above is required.')
 
 
-    
+
 __author__ = "Nathaniel Gray <n8gray@caltech.edu>"
 __version__ = '0.5.5'
 __date__ = "Sun Sep 30 15:38:50 PDT 2001"
 
 # This is deep, deep evil!  I love it!
 
-_auto_quote_funcs_=['cd', 'cp', 'cpr', 'delete', 'll', 'ln', 'lnh', 'lr', 
+_auto_quote_funcs_=['cd', 'cp', 'cpr', 'delete', 'll', 'ln', 'lnh', 'lr',
                     'ls', 'mkdir', 'mv', 'popd', 'pushd', 'rm', 'rmdir', 'who',
                     'whos', 'execfile']
 _auto_paren_funcs_=[]
@@ -37,7 +37,7 @@ _ns_ = sys.modules['__main__'].__dict__
 class LazyPython:
     """
 Lazy Python is an attempt to make interactive python less painful for
-lazy, lazy programmers.  There are five ways (three, sir), ah yes, three ways 
+lazy, lazy programmers.  There are five ways (three, sir), ah yes, three ways
 that LazyPython does this:
 
     1. Auto-Quoting
@@ -77,10 +77,10 @@ that LazyPython does this:
         that is immediately discarded.  You have to use os.chdir or the cd
         convenience function to change the interpreter's directory.
 
-IMPORTANT NOTES ON USAGE:  
+IMPORTANT NOTES ON USAGE:
     1.  The intent of this work is to make little functions like dir,
-        pprint, and reload easier to use interactively.  By design, these 
-        tricks only work in the interactive shell and only at the __main__ 
+        pprint, and reload easier to use interactively.  By design, these
+        tricks only work in the interactive shell and only at the __main__
         scope.  DON'T USE THEM WHEN YOU WRITE SCRIPTS!
 
     2.  LazyPython tells you that it's altered your command line by
@@ -97,11 +97,11 @@ IMPORTANT NOTES ON USAGE:
             >>> len [1,2,3,4]        # Looks like indexing
             >>> zip (1,2,3), (4,5,6) # Looks like call + tuple construct
         In these cases you must force auto-quoting or auto-parenning with
-        the appropriate escape character.    
+        the appropriate escape character.
 
-    4.  Whitespace is more important than usual (even for Python ;^)!  
-        The function name must have some trailing whitespace and arguments 
-        to auto-quote functions cannot have embedded whitespace.  
+    4.  Whitespace is more important than usual (even for Python ;^)!
+        The function name must have some trailing whitespace and arguments
+        to auto-quote functions cannot have embedded whitespace.
         >>> ls pathname/with whitespace
         becomes
         --> ls("pathname/with", "whitespace")
@@ -112,13 +112,13 @@ IMPORTANT NOTES ON USAGE:
         But
         >>> /zip(1,2,3), (4,5,6) # Fails --> zip(1,2,3),((4,5,6))
 
-        Just remember to always put a space after your function name and 
-        you'll be fine.  If you need whitespace in an auto-quote function's 
-        argument I'm afraid you're just going to have to write your 
+        Just remember to always put a space after your function name and
+        you'll be fine.  If you need whitespace in an auto-quote function's
+        argument I'm afraid you're just going to have to write your
         function call out the old-fashioned way, ya lazy bum.
 
 Current Auto-Quote Functions:
-    cd, cp, cpr, delete, execfile, ll, ln, lnh, lr, ls, mkdir, mv, popd, 
+    cd, cp, cpr, delete, execfile, ll, ln, lnh, lr, ls, mkdir, mv, popd,
     pushd, rm, rmdir, who, whos
 
 To extend this list for the current session, type:
@@ -131,11 +131,11 @@ LazyPython.py
     def __init__(self):
         # Save the original excepthook for use when there *is* an error
         self._orig_ehook = sys.excepthook
-        
+
     def uninstall(self):
         sys.excepthook = self._orig_ehook
-        print "LazyPython uninstalled"
-        
+        print("LazyPython uninstalled")
+
     def __call__(self, tp, val, argin3):
         global _auto_quote_funcs_
 
@@ -143,12 +143,12 @@ LazyPython.py
         if not isinstance(val, exceptions.SyntaxError):
             self._orig_ehook(tp,val,argin3)
             return
-        
+
         # Complain if we're not at the top level
         if (val.text[0]).isspace():
-            raise RuntimeError, \
-                    "LazyPython shortcuts do not work in loops or functions."
-        
+            raise RuntimeError(
+                    "LazyPython shortcuts do not work in loops or functions.")
+
         # Test for shell escape
         if val.text[0] == _SHELL_ESCAPE:
             os.system(val.text[1:])
@@ -207,15 +207,15 @@ LazyPython.py
         elif lp_mode == 3:
             pass # newcmd has already been set
         else:
-            raise RuntimeError, 'Error in LazyPython.py!  Illegal lp_mode.'
+            raise RuntimeError('Error in LazyPython.py!  Illegal lp_mode.')
 
         # Try to execute the new command
         try:
-            print '-->', newcmd
+            print('-->', newcmd)
             sys.displayhook( eval( newcmd, _ns_ ) )
             #exec newcmd in _ns_
         except:
             traceback.print_exc()
 
 
-print 'Welcome to Lazy Python.  Type "help LazyPython" for help.'
+print('Welcome to Lazy Python.  Type "help LazyPython" for help.')

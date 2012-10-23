@@ -16,16 +16,16 @@ PYTHONUSERDIR approppriately, too::
 
 """
 # python-startup.py
-# Author: Nathan Gray, based on interactive.py by Robin Friedrich and an 
+# Author: Nathan Gray, based on interactive.py by Robin Friedrich and an
 #           evil innate desire to customize things.
 # E-Mail: n8gray@caltech.edu
 #
-# Version: 0.6 
+# Version: 0.6
 
 # These modules are always nice to have in the namespace
 
 ############################################################################
-# Below this is Robin Friedrich's interactive.py with some edits to decrease 
+# Below this is Robin Friedrich's interactive.py with some edits to decrease
 # namespace pollution and change the help functionality
 # NG
 #
@@ -55,6 +55,12 @@ import time
 import types
 
 try:
+    import __builtin__
+except ImportError:
+    import builtins
+    __builtin__ = builtins
+
+try:
     from pydoc import help
 except ImportError:
     def help(*objects):
@@ -66,11 +72,11 @@ except ImportError:
             return
         for obj in objects:
             try:
-                print '****', obj.__name__ , '****'
-                print obj.__doc__
+                print('****', obj.__name__ , '****')
+                print(obj.__doc__)
             except AttributeError:
-                print `obj`, 'has no __doc__ attribute'
-                print
+                print(obj, 'has no __doc__ attribute')
+                print()
 
 try:
     from collections import defaultdict
@@ -84,7 +90,7 @@ except ImportError:
     pass
 else:
     for m in get_models():
-        exec "from %s import %s" % (m.__module__, m.__name__)
+        exec("from %s import %s" % (m.__module__, m.__name__))
 
 home = os.path.expandvars('$HOME')
 user_dir = os.environ.get("PYTHONUSERDIR")
@@ -143,16 +149,14 @@ try:
     sys.excepthook = LazyPython()
 except ImportError:
     pass
-    
+
 # Pretty-print at the command prompt for more readable dicts and lists.
 from pprint import pprint
-import __builtin__
 def myhook(value, show=pprint, bltin=__builtin__):
     if value is not None:
         bltin._ = value
         show(value)
 sys.displayhook = myhook
-del __builtin__
 
 try:
     # Try to set up command history completion/saving/reloading
@@ -168,7 +172,7 @@ try:
             global histfile
             readline.write_history_file(histfile)
         except:
-            print 'Unable to save Python command history'
+            print('Unable to save Python command history')
     atexit.register(savehist)
     del atexit
 except ImportError:
@@ -186,25 +190,25 @@ except ImportError:
 # to edit a module, class, method, or function!
 # Note that this relies on my enhanced version of which().
 def edit(object, editor=EDITOR):
-    """Edit the source file from which a module, class, method, or function 
+    """Edit the source file from which a module, class, method, or function
     was imported.
     Usage:  >>> edit(mysteryObject)
     """
-    
+
     if type(object) is type(""):
         fname = object; lineno = 1
-        print editor % locals()
+        print(editor % locals())
         subprocess.Popen(editor % locals(), shell=True)
         return
-    
+
     ret = which(object)
-    if not ret: 
-        print "Can't edit that!"
+    if not ret:
+        print("Can't edit that!")
         return
     fname, lineno = ret
     if fname[-4:] == '.pyc' or fname[-4:] == '.pyo':
         fname = fname[:-1]
-    print editor % locals()
+    print(editor % locals())
     subprocess.Popen(editor % locals(), shell=True)
 
 def timed(func):
@@ -297,8 +301,8 @@ def rm(*args):
     for item in filenames:
         try:
             os.remove(item)
-        except os.error, detail:
-            print "%s: %s" % (detail[1], item)
+        except os.error as detail:
+            print("%s: %s" % (detail[1], item))
 delete = rm
 
 def rmdir(directory):
@@ -313,9 +317,9 @@ def rmdir(directory):
         answer = raw_input(directory+" isn't empty. Delete anyway?[n] ")
         if answer and answer[0] in 'Yy':
             subprocess.Popen('rm -rf %s' % directory, shell=True)
-            print directory + ' Deleted.'
+            print(directory + ' Deleted.')
         else:
-            print directory + ' Unharmed.'
+            print(directory + ' Unharmed.')
 
 def mv(*args):
     """Move files within a filesystem.
@@ -326,22 +330,22 @@ def mv(*args):
     filenames = _glob(args)
     nfilenames = len(filenames)
     if nfilenames < 2:
-        print 'Need at least two arguments'
+        print('Need at least two arguments')
     elif nfilenames == 2:
         try:
             os.rename(filenames[0], filenames[1])
-        except os.error, detail:
-            print "%s: %s" % (detail[1], filenames[1])
+        except os.error as detail:
+            print("%s: %s" % (detail[1], filenames[1]))
     else:
         for filename in filenames[:-1]:
             try:
                 dest = filenames[-1]+'/'+filename
                 if not os.path.isdir(filenames[-1]):
-                    print 'Last argument needs to be a directory'
+                    print('Last argument needs to be a directory')
                     return
                 os.rename(filename, dest)
-            except os.error, detail:
-                print "%s: %s" % (detail[1], filename)
+            except os.error as detail:
+                print("%s: %s" % (detail[1], filename))
 
 def cp(*args):
     """Copy files along with their mode bits.
@@ -352,22 +356,22 @@ def cp(*args):
     filenames = _glob(args)
     nfilenames = len(filenames)
     if nfilenames < 2:
-        print 'Need at least two arguments'
+        print('Need at least two arguments')
     elif nfilenames == 2:
         try:
             shutil.copy(filenames[0], filenames[1])
-        except os.error, detail:
-            print "%s: %s" % (detail[1], filenames[1])
+        except os.error as detail:
+            print("%s: %s" % (detail[1], filenames[1]))
     else:
         for filename in filenames[:-1]:
             try:
                 dest = filenames[-1]+'/'+filename
                 if not os.path.isdir(filenames[-1]):
-                    print 'Last argument needs to be a directory'
+                    print('Last argument needs to be a directory')
                     return
                 shutil.copy(filename, dest)
-            except os.error, detail:
-                print "%s: %s" % (detail[1], filename)
+            except os.error as detail:
+                print("%s: %s" % (detail[1], filename))
 
 def cpr(src, dst):
     """Recursively copy a directory tree to a new location
@@ -392,7 +396,7 @@ def pwd():
     """Print current working directory path.
     Usage:  >>> pwd()
     """
-    print os.getcwd()
+    print(os.getcwd())
 
 cdlist = [home]
 def cd(directory = -1):
@@ -413,7 +417,7 @@ def cd(directory = -1):
             return
     directory = _glob(directory)[0]
     if not os.path.isdir(directory):
-        print `directory`+' is not a directory'
+        print(directory + ' is not a directory')
         return
     directory = _expandpath(directory)
     if directory not in cdlist:
@@ -447,10 +451,10 @@ def popd():
     global interactive_dir_stack
     try:
         cd(interactive_dir_stack[-1])
-        print interactive_dir_stack[-1]
+        print(interactive_dir_stack[-1])
         del interactive_dir_stack[-1]
     except IndexError:
-        print 'Stack is empty'
+        print('Stack is empty')
 
 def syspath():
     """Print the Python path.
@@ -460,9 +464,9 @@ def syspath():
     pprint(sys.path)
 
 def which(object):
-    """Print the source file from which a module, class, function, or method 
+    """Print the source file from which a module, class, function, or method
     was imported.
-    
+
     Usage:    >>> which(mysteryObject)
     Returns:  Tuple with (file_name, line_number) of source file, or None if
               no source file exists
@@ -471,35 +475,34 @@ def which(object):
     object_type = type(object)
     if object_type is types.ModuleType:
         if hasattr(object, '__file__'):
-            print 'Module from', object.__file__
+            print('Module from', object.__file__)
             return (object.__file__, 1)
         else:
-            print 'Built-in module.'
+            print('Built-in module.')
     elif object_type is types.ClassType:
         if object.__module__ == '__main__':
-            print 'Built-in class or class loaded from $PYTHONSTARTUP'
+            print('Built-in class or class loaded from $PYTHONSTARTUP')
         else:
-            print 'Class', object.__name__, 'from', \
-                    sys.modules[object.__module__].__file__
+            print('Class', object.__name__, 'from', \
+                    sys.modules[object.__module__].__file__)
             # Send you to the first line of the __init__ method
-            return (sys.modules[object.__module__].__file__, 
+            return (sys.modules[object.__module__].__file__,
                     object.__init__.im_func.func_code.co_firstlineno)
     elif object_type in (types.BuiltinFunctionType, types.BuiltinMethodType):
-        print "Built-in or extension function/method."
+        print("Built-in or extension function/method.")
     elif object_type is types.FunctionType:
-        print 'Function from', object.func_code.co_filename
+        print('Function from', object.func_code.co_filename)
         return (object.func_code.co_filename, object.func_code.co_firstlineno)
     elif object_type is types.MethodType:
-        print 'Method of class', object.im_class.__name__, 'from', 
+        print('Method of class', object.im_class.__name__, 'from', )
         fname = sys.modules[object.im_class.__module__].__file__
-        print fname
+        print(fname)
         return (fname, object.im_func.func_code.co_firstlineno)
     else:
-        print "argument is not a module or function."
+        print("argument is not a module or function.")
     return None
 whence = which
 
 # Automatically add some convenience functions to __builtin__
-import __builtin__
 for n in autobuiltins:
-    exec '__builtin__.__dict__["%s"] = %s' % (n,n) in globals()
+    exec('__builtin__.__dict__["%s"] = %s' % (n,n)) in globals()
