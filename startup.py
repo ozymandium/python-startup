@@ -55,12 +55,6 @@ import time
 import types
 
 try:
-    import __builtin__
-except ImportError:
-    import builtins
-    __builtin__ = builtins
-
-try:
     from pydoc import help
 except ImportError:
     def help(*objects):
@@ -151,6 +145,12 @@ except ImportError:
     pass
 
 # Pretty-print at the command prompt for more readable dicts and lists.
+try:
+    import __builtin__
+except ImportError:
+    import builtins
+    __builtin__ = builtins
+
 from pprint import pprint
 def myhook(value, show=pprint, bltin=__builtin__):
     if value is not None:
@@ -502,6 +502,12 @@ def which(object):
         print("argument is not a module or function.")
     return None
 whence = which
+
+try:
+    import __builtin__
+except ImportError:
+    import builtins
+    __builtin__ = builtins
 
 # Automatically add some convenience functions to __builtin__
 for n in autobuiltins:
