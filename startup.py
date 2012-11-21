@@ -170,6 +170,7 @@ try:
     def savehist():
         try:
             global histfile
+            import readline
             readline.write_history_file(histfile)
         except:
             print('Unable to save Python command history')
