@@ -50,7 +50,7 @@ __author__ = "Nathaniel Gray <n8gray@caltech.edu>"
 __date__ = "Sun Oct 21 14:51:45 PDT 2001"
 
 if sys.version[0:3] < '2.1':
-    raise ImportError, 'Python Version 2.1 or above is required.'
+    raise ImportError('Python Version 2.1 or above is required.')
 
 class Colors:
     
